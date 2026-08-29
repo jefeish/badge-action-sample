@@ -2,6 +2,10 @@
 
 ![badge](badge/badge.svg)
 
+---
+
+Any commit to the Repo triggers the workflow below, it requests and saves a `badge.svg` file, which this README.md file references.
+
 ```mermaid
 sequenceDiagram
     autonumber
