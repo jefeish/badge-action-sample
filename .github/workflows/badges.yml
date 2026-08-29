@@ -23,6 +23,8 @@ jobs:
           BADGE_PASSWORD: ${{ secrets.BADGE_PASSWORD }}
         run: |
           mkdir -p badge
+          
+          BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M UTC")
 
           curl --fail --silent --show-error \
             --request POST "https://apps.jefeish.org/badge-server" \
@@ -30,11 +32,12 @@ jobs:
             --data "$(jq -n \
               --arg user "$BADGE_USER" \
               --arg password "$BADGE_PASSWORD" \
+              --arg message "$BUILD_TIME" \
               '{
                 user: $user,
                 password: $password,
                 label: "build",
-                message: "passing",
+                message: $message,
                 color: "brightgreen",
                 labelColor: "#555",
                 style: "flat"
