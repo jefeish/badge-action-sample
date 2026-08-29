@@ -1,0 +1,55 @@
+name: Update Badge
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch badge SVG from badge server
+        env:
+          BADGE_USER: ${{ secrets.BADGE_USER }}
+          BADGE_PASSWORD: ${{ secrets.BADGE_PASSWORD }}
+        run: |
+          mkdir -p badge
+
+          curl --fail --silent --show-error \
+            --request POST "https://apps.jefeish.org/badge-server" \
+            --header "Content-Type: application/json" \
+            --data "$(jq -n \
+              --arg user "$BADGE_USER" \
+              --arg password "$BADGE_PASSWORD" \
+              '{
+                user: $user,
+                password: $password,
+                label: "build",
+                message: "passing",
+                color: "brightgreen",
+                labelColor: "#555",
+                style: "flat"
+              }')" \
+            --output badge/badge.svg
+
+      - name: Commit badge file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add badge/badge.svg
+
+          if git diff --cached --quiet; then
+            echo "No badge changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: update badge [skip ci]"
+          git push
