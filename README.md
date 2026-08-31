@@ -12,10 +12,10 @@ sequenceDiagram
     autonumber
     actor Dev as Developer
     participant Repo as GitHub Repo
+    participant Readme as README.md
     participant GHA as GitHub Action
     participant Akamai as Akamai (Edge/Proxy)
     participant Backend as Backend Service
-    participant Readme as README.md
 
     Dev->>Repo: Push commit / open PR
     Repo->>GHA: Trigger workflow (on: push, pull_request)
